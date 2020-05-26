@@ -1,0 +1,6 @@
+MODULE asdf;
+BEGIN
+IF x < 4 THEN
+  x := 5 + 9 - 3;
+END;
+END asdf.

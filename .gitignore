@@ -1,0 +1,5 @@
+.vs/
+session.rdbg
+scratch.odin
+*.pdb
+*.exe
