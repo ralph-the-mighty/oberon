@@ -1,6 +1,14 @@
 MODULE asdf;
+  CONST x = 4; asdf = 43; qwe = 4;
+  TYPE list = int; qwer = ARRAY 5 OF int;
+  VAR x, y, z: Integer;
 BEGIN
-IF x < 4 THEN
-  x := 5 + 9 - 3;
-END;
+  x := 2;
+  IF x < 4 THEN
+    x := 5 + 9 - 3;
+  END;
+  IF x < 3 THEN
+    x := 3 - 2;
+    y := 93;
+  END;
 END asdf.

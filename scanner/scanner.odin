@@ -272,8 +272,8 @@ get :: proc() {
         sym = .NULL;
     }
   }
-  fmt.print("GET: ");
-  fmt.println(sym);
+  // fmt.print("GET: ");
+  // fmt.println(sym);
 }
 
 init :: proc(s: string) {

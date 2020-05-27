@@ -12,7 +12,6 @@ loaded: bool;
 
 
 
-
 selector :: proc() {
   for scanner.sym == .LBRAK || scanner.sym == .PERIOD {
     if scanner.sym == .LBRAK {
@@ -39,6 +38,12 @@ selector :: proc() {
 
 factor :: proc() {
   //sync
+  if scanner.sym < .LPAREN {
+    scanner.mark("ident?");
+    for scanner.sym < .LPAREN do scanner.get();
+  }
+
+
   if scanner.sym == .IDENT {
     scanner.get();
   } else if scanner.sym == .NUMBER {
@@ -142,11 +147,6 @@ statement :: proc() {
     }
     expression();
   }
-  if scanner.sym == .SEMICOLON {
-    scanner.get();
-  } else {
-    scanner.mark(";?");
-  }
 }
 
 statement_sequence :: proc () {
@@ -163,7 +163,28 @@ statement_sequence :: proc () {
               scanner.sym  >= .ARRAY {
       break;
     } else {
-      scanner.mark("semicolon?");
+      scanner.mark("semicolon bro?");
+    }
+  }
+}
+
+
+ident_list :: proc() {
+  if scanner.sym == .IDENT {
+    scanner.get();
+    for scanner.sym == .COMMA {
+      scanner.get();
+      if scanner.sym == .IDENT {
+        //do stuff
+        scanner.get();
+      } else {
+        scanner.mark("ident?");
+      }
+    }
+    if scanner.sym == .COLON {
+      scanner.get();
+    } else {
+      scanner.mark("ident?");
     }
   }
 }
@@ -173,9 +194,94 @@ statement_sequence :: proc () {
 
 
 
+type_decl :: proc () {
+  //ident, RecordType, ArrayType
+
+  //sync
+  if scanner.sym != .IDENT && scanner.sym < .ARRAY {
+    scanner.mark("type?");
+    for scanner.sym != .IDENT && scanner.sym < .ARRAY do scanner.get();
+  }
+
+
+
+  if scanner.sym == .IDENT {
+    scanner.get();
+    //check type here
+  } else if scanner.sym == .ARRAY {
+    scanner.get();
+    
+    expression(); //this expression better be a number
+    if scanner.sym == .OF {
+      scanner.get();
+    } else {
+      scanner.mark("OF?");
+    }
+    type_decl();
+  } else if scanner.sym == .RECORD {
+    scanner.get();
+    scanner.mark("RECORD TYPE NOT SUPPORTED!");
+  } else {
+    scanner.mark("ident?");
+  }
+}
+
+
+
 
 declarations :: proc () {
+  //sync loop
 
+  if scanner.sym == .CONST {
+    scanner.get();
+    for scanner.sym == .IDENT {
+      scanner.get();
+      if scanner.sym == .EQL {
+        scanner.get();
+      } else {
+        scanner.mark("=?");
+      }
+      expression();
+      
+      if scanner.sym == .SEMICOLON {
+        scanner.get();
+      } else {
+        scanner.mark(";?");
+      }
+    }
+  }
+
+  if scanner.sym == .TYPE {
+    scanner.get();
+    for scanner.sym == .IDENT {
+      scanner.get();
+      if scanner.sym == .EQL {
+        scanner.get();
+      } else {
+        scanner.mark("=?");
+      }
+      type_decl();
+      
+      if scanner.sym == .SEMICOLON {
+        scanner.get();
+      } else {
+        scanner.mark(";?");
+      }
+    }
+  }
+
+  if scanner.sym == .VAR {
+    scanner.get();
+    for scanner.sym == .IDENT {
+      ident_list();
+      type_decl();
+      if scanner.sym == .SEMICOLON {
+        scanner.get();
+      } else {
+        scanner.mark(";?");
+      }
+    }
+  }
 }
 
 
